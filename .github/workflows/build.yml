@@ -1,0 +1,43 @@
+name: Build and Test
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: 3.x
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt  # Assuming you have a requirements.txt file
+
+    - name: Run tests  # Optional: Add tests if you have any
+      run: pytest
+
+    - name: Build executable
+      run: pyinstaller --onefile main_gui.py  # Adjust the command based on your packaging tool
+
+    - name: Upload artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-executable
+        path: dist/main_gui  # Adjust the path based on your packaging tool
+
+    - name: Deploy
+      if: success()
+      uses: actions/upload-artifact@v2
+      with:
+        name: my-executable
+        path: dist/main_gui  # Adjust the path based on your packaging tool
